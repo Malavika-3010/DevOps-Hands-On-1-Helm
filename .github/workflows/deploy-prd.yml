@@ -1,0 +1,44 @@
+name: Deploy to Prd
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy-prd:
+    runs-on: ubuntu-latest
+
+    permissions:
+      id-token: write    # REQUIRED for OIDC
+      contents: read
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Azure Login (OIDC)
+      uses: azure/login@v1
+      with:
+        client-id: ${{ vars.AZURE_CLIENT_ID }}
+        tenant-id: ${{ vars.AZURE_TENANT_ID }}
+        subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
+    - name: Set AKS Context
+      uses: azure/aks-set-context@v3
+      with:
+        resource-group: ${{ vars.AKS_RESOURCE_GROUP }}
+        cluster-name: ${{ vars.AKS_CLUSTER_NAME }}
+
+    - name: Build and Push Docker Image (Prd)
+      run: |
+        docker build -t ${{ vars.ACR_LOGIN_SERVER }}/sample-app:prd .
+        docker push ${{ vars.ACR_LOGIN_SERVER }}/sample-app:prd
+
+    - name: Deploy to Prd Namespace
+      run: |
+        sed -e "s|IMAGE_NAME|${{ vars.ACR_LOGIN_SERVER }}/sample-app:prd|g" \
+            -e "s|ENV_VALUE|${{ vars.PRD_ENV }}|g" \
+            k8s/deployment.yaml | kubectl apply -n prd -f -
+
+        kubectl apply -n prd -f k8s/service.yaml
