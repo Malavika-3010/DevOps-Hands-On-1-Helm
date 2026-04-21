@@ -16,6 +16,17 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
+    - name: Debug OIDC token claims
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const token = await core.getIDToken();
+          const payload = JSON.parse(
+          Buffer.from(token.split('.')[1], 'base64').toString()
+          );
+          console.log('OIDC ISSUER:', payload.iss);
+          console.log('OIDC SUBJECT:', payload.sub);
+          console.log('OIDC AUDIENCE:', payload.aud);
 
     - name: Debug GitHub context
       run: |
@@ -25,12 +36,11 @@ jobs:
         echo "ref_name          = ${{ github.ref_name }}"
 
     - name: Azure Login (OIDC)
-      uses: azure/login@v1
+      uses: azure/login@v2
       with:
         client-id: ${{ vars.AZURE_CLIENT_ID }}
         tenant-id: ${{ vars.AZURE_TENANT_ID }}
         subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
-        enable-AzPSSession: false
 
     - name: Set AKS Context
       uses: azure/aks-set-context@v3
