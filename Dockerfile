@@ -2,13 +2,9 @@ FROM node:18-slim
 
 WORKDIR /app
 
-# Copy package files first
-COPY app/package.json app/package-lock.json ./
+COPY app/package.json ./
+RUN npm install --legacy-peer-deps --no-audit --no-fund --omit=optional
 
-# Use npm ci for reproducible builds
-RUN npm ci --omit=optional --no-audit --no-fund
-
-# Copy source code
 COPY app/ .
 
 EXPOSE 3000
