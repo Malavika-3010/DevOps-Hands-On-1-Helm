@@ -47,9 +47,10 @@ jobs:
 
       - name: Build and Push Docker Image (Prd)
         run: |
-          docker build --platform linux/arm64 -t ${{ vars.ACR_LOGIN_SERVER }}/sample-app:prd .
-
-          docker push ${{ vars.ACR_LOGIN_SERVER }}/sample-app:prd
+          docker build \
+            --platform linux/arm64 \
+            --network=host \
+            -t ${{ vars.ACR_LOGIN_SERVER }}/sample-app:prd .
 
       - name: Deploy to Prd Namespace
         run: |
