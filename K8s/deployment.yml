@@ -15,6 +15,7 @@ spec:
       containers:
       - name: sample-app
         image: IMAGE_NAME
+        imagePullPolicy: Always
         ports:
         - containerPort: 3000
         env:

@@ -43,9 +43,8 @@ jobs:
       # Build & push ARM64 image
       - name: Build and Push Docker Image (Dev)
         run: |
-          docker build --platform linux/arm64 \
-            -t ${{ vars.ACR_LOGIN_SERVER }}/sample-app:dev .
-          docker push ${{ vars.ACR_LOGIN_SERVER }}/sample-app:dev
+          docker buildx build --platform linux/arm64 --no-cache --push -t ${{ vars.ACR_LOGIN_SERVER }}/sample-app:dev .
+
 
       # Set AKS context
       - name: Set AKS Context
