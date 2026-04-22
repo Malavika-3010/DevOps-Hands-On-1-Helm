@@ -10,3 +10,20 @@ crash.log
 # --- OS / Editor ---
 .DS_Store
 .vscode/
+
+
+# Dependency directories
+node_modules/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment variables
+.env
+.env.*
+
+# OS-specific files
+.DS_Store
+Thumbs.db
