@@ -59,7 +59,7 @@ jobs:
 
     - name: Build and Push Docker Image (Dev)
       run: |
-        docker build -t ${{ vars.ACR_LOGIN_SERVER }}/sample-app:dev .
+        docker build --platform linux/arm64 -t ${{ vars.ACR_LOGIN_SERVER }}/sample-app:dev .
         docker push ${{ vars.ACR_LOGIN_SERVER }}/sample-app:dev
 
     
