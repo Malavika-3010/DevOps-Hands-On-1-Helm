@@ -5,12 +5,14 @@ on:
     branches:
       - main
 
+
 jobs:
   deploy-prd:
+    environment: prd    
     runs-on: ubuntu-latest
 
     permissions:
-      id-token: write    # REQUIRED for OIDC
+      id-token: write
       contents: read
 
     steps:
