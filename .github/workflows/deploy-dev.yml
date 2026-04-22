@@ -57,6 +57,12 @@ jobs:
         resource-group: ${{ vars.AKS_RESOURCE_GROUP }}
         cluster-name: ${{ vars.AKS_CLUSTER_NAME }}
 
+        
+    - name: Install dependencies (native)
+      working-directory: app
+      run: npm install --legacy-peer-deps --omit=optional --no-audit --no-fund
+
+
     - name: Build and Push Docker Image (Dev)
       run: |
         docker build --platform linux/arm64 -t ${{ vars.ACR_LOGIN_SERVER }}/sample-app:dev .
