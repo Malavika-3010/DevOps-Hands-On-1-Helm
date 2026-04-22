@@ -2,12 +2,11 @@ FROM --platform=linux/arm64 node:18-slim
 
 WORKDIR /app
 
-# Copy dependency files first (CRITICAL)
-COPY app/package.json app/package-lock.json ./
+# Copy only package.json (lock file does not exist)
+COPY app/package.json ./
 
-# Force npm registry + stable behavior
-RUN npm config set registry https://registry.npmjs.org/ \
-    && npm ci --no-audit --no-fund --prefer-offline --loglevel verbose
+# Install dependencies
+RUN npm install --no-audit --no-fund
 
 # Copy application source
 COPY app/ .
