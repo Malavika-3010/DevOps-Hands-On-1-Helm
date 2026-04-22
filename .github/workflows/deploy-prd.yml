@@ -18,13 +18,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Debug GitHub context
-        run: |
-          echo "repository        = ${{ github.repository }}"
-          echo "repository_owner  = ${{ github.repository_owner }}"
-          echo "ref               = ${{ github.ref }}"
-          echo "ref_name          = ${{ github.ref_name }}"
-
+      # Azure authentication (OIDC)
       - name: Azure Login (OIDC)
         uses: azure/login@v2
         with:
@@ -32,29 +26,37 @@ jobs:
           tenant-id: ${{ vars.AZURE_TENANT_ID }}
           subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
 
+      # Docker setup
       - name: Set up Docker
         uses: docker/setup-buildx-action@v3
 
+      # ACR login
       - name: Login to ACR
         run: |
           az acr login --name ${{ vars.ACR_NAME }}
 
+      # Install Node deps natively (same as Dev)
+      - name: Install dependencies (native)
+        working-directory: app
+        run: npm install --legacy-peer-deps --omit=optional --no-audit --no-fund
+
+      # Build & push ARM64 Prod image ✅
+      - name: Build and Push Docker Image (Prd)
+        run: |
+          docker buildx build \
+            --platform linux/arm64 \
+            --no-cache \
+            --push \
+            -t ${{ vars.ACR_LOGIN_SERVER }}/sample-app:prd .
+
+      # Set AKS context
       - name: Set AKS Context
         uses: azure/aks-set-context@v3
         with:
           resource-group: ${{ vars.AKS_RESOURCE_GROUP }}
           cluster-name: ${{ vars.AKS_CLUSTER_NAME }}
 
-
-      - name: Install dependencies (native)
-        working-directory: app
-        run: npm install --legacy-peer-deps --omit=optional --no-audit --no-fund
-
-
-      - name: Build and Push Docker Image (Prd)
-        run: |
-          docker build --platform linux/arm64 -t ${{ vars.ACR_LOGIN_SERVER }}/sample-app:prd .
-
+      # Deploy to Prd
       - name: Deploy to Prd Namespace
         run: |
           sed -e "s|IMAGE_NAME|${{ vars.ACR_LOGIN_SERVER }}/sample-app:prd|g" \
