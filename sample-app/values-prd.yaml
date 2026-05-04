@@ -1,5 +1,5 @@
 image:
-  repository: <ACR_LOGIN_SERVER>/sample-app
+  repository: demoacrmal.azurecr.io/sample-app
   tag: prd
 
 env:
