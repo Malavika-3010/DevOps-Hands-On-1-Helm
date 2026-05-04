@@ -1,6 +1,6 @@
 image:
   repository: demoacrmal.azurecr.io/sample-app
-  tag: dev
+  tag: dev-2
 
 env:
   ENV: dev
