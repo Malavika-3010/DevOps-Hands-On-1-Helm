@@ -39,7 +39,7 @@ jobs:
         run: |
           docker buildx build \
             --platform linux/arm64 \
-            -t ${{ vars.ACR_LOGIN_SERVER }}/sample-app:dev-2 \
+            -t ${{ vars.ACR_LOGIN_SERVER }}/sample-app:dev \
             --push .
 
       # Set AKS context
