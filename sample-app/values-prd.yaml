@@ -1,0 +1,6 @@
+image:
+  repository: <ACR_LOGIN_SERVER>/sample-app
+  tag: prd
+
+env:
+  ENV: prd
